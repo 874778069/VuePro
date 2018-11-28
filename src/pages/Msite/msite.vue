@@ -1,115 +1,32 @@
 <template>
   <section class="msite">
     <!--首页头部-->
-    <TopHeader :title="'昌平区北七家宏福科技园(337省道北)'"></TopHeader>
+    <TopHeader :title="add"></TopHeader>
     <!--首页导航-->
     <nav class="msite_nav">
-      <div class="swiper-container">
+      <div class="swiper-container" v-if="foodListsOne.length>0">
         <div class="swiper-wrapper">
           <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
+            <a href="javascript:" class="link_to_food" v-for="(food,index) in foodListsOne" :key="index">
               <div class="food_container">
-                <img src="./images/nav/1.jpg">
+                <img :src="`https://fuss10.elemecdn.com${food.image_url}`">
               </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/3.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/4.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/5.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/6.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/7.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/8.jpg">
-              </div>
-              <span>土豪推荐</span>
+              <span>{{food.title}}</span>
             </a>
           </div>
-          <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
+          <div class="swiper-slide"> <!--https://fuss10.elemecdn.com-->
+            <a href="javascript:" class="link_to_food"  v-for="food in foodListsTwo">
               <div class="food_container">
-                <img src="./images/nav/9.jpg">
+                <img :src="`https://fuss10.elemecdn.com${food.image_url}`">
               </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/10.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/11.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/12.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/13.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/14.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/1.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>土豪推荐</span>
+              <span>{{food.title}}</span>
             </a>
           </div>
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination"></div>
       </div>
+      <img src="./images/msite_back.svg" alt="loading" v-else>
     </nav>
     <!--首页附近商家-->
     <ShopList></ShopList>
@@ -118,13 +35,50 @@
 
 <script>
     import TopHeader from "./../../components/TopHeader/TopHeader.vue";
-    import ShopList from "./../../components/ShopList/ShopList.vue"
+    import ShopList from "./../../components/ShopList/ShopList.vue";
+    import Swiper from "swiper"
+    import "swiper/dist/css/swiper.css"
     export default {
         name: "msite",
+      computed:{
+        add(){
+          return this.$store.state.address
+        },
+        foodListsOne(){
+          var arr1 = this.$store.state.categorys;
+          var arr2 = arr1.slice(0,8);
+          return arr2
+        },
+        foodListsTwo(){
+          var arr1 = this.$store.state.categorys;
+          var arr2 = arr1.slice(8,16);
+          return arr2
+        },
+      },
         components: {
           TopHeader,
           ShopList
+        },
+      mounted(){
+        this.$store.dispatch("reqAdd");
+        this.$store.dispatch("reqFoodLists")
+      },
+      watch:{
+        foodListsOne(){
+          this.$nextTick(()=>{
+            new Swiper(".swiper-container",{
+              loop : true,
+              autoplay: {
+                delay:2000,
+                disableOnInteraction : false,
+              },
+              pagination:{
+                el : ".swiper-pagination"
+              }
+            })
+          })
         }
+      }
     }
 </script>
 

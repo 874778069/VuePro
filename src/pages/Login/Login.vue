@@ -12,11 +12,19 @@
           <form>
             <div :class="{on : flag}">
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机号">
-                <button disabled="disabled" class="get_verification">获取验证码</button>
+                <input
+                  type="tel" maxlength="11"
+                  placeholder="手机号"
+                  v-model="tele"
+                >
+                <button :disabled="!isPhone || time > 0"
+                        class="get_verification"
+                        :class="{right_phone_number : time <= 0 && isPhone}"
+                        @click.prevent="sendCode"
+                >{{time > 0 ? `已发送${time}s` : "获取验证码"}}</button>
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="8" placeholder="验证码">
+                <input type="tel" maxlength="6" placeholder="验证码">
               </section>
               <section class="login_hint">
                 温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -29,10 +37,10 @@
                   <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
                 </section>
                 <section class="login_verification">
-                  <input type="tel" maxlength="8" placeholder="密码">
-                  <div class="switch_button on">
-                    <div class="switch_circle"></div>
-                    <span class="switch_text">...</span>
+                  <input :type="t" maxlength="8" placeholder="密码">
+                  <div class="switch_button" :class="ST" @click="handleC">
+                    <div class="switch_circle" :style="`transform: translateX(${num}px);`"></div>
+                    <span class="switch_text">{{msg}}</span>
                   </div>
                 </section>
                 <section class="login_message">
@@ -41,7 +49,7 @@
                 </section>
               </section>
             </div>
-            <button class="login_submit">登录</button>
+            <button class="login_submit" @click.prevent="">登录</button>
           </form>
           <a href="javascript:;" class="about_us">关于我们</a>
         </div>
@@ -60,6 +68,17 @@
           return{
             flag : true,
             flag2 : false,
+            t : "password",
+            ST : "off",
+            msg : "...",
+            num : 0,
+            tele:"",
+            time:0
+          }
+      },
+      computed:{
+          isPhone(){
+            return /^1\d{10}$/.test(this.tele)
           }
       },
       methods:{
@@ -70,6 +89,25 @@
         change2(){
           this.flag = !this.flag;
           this.flag2 = !this.flag2
+        },
+        handleC(){
+          this.ST = (this.ST == "on" ? "off" : "on");
+          this.t = (this.t == "tel" ? "password" : "tel");
+          this.num = (this.num == 27 ? 0 : 27);
+          this.msg = (this.msg == "abc" ? "..." : "abc");
+        },
+        sendCode(){
+
+          console.log("a");
+          this.time = 30;
+          var timer = setInterval(()=>{
+
+            this.time--;
+
+            if(this.time==0) {
+              clearInterval(timer)
+            }
+          },1000)
         }
       }
     }
@@ -135,6 +173,8 @@
                   color #ccc
                   font-size 14px
                   background transparent
+                  &.right_phone_number
+                    color black
               .login_verification
                 position relative
                 margin-top 16px
