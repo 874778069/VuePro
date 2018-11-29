@@ -5,7 +5,7 @@
           <h2 class="login_logo">硅谷外卖</h2>
           <div class="login_header_title">
             <a href="javascript:;" :class="{on : flag}" @click="change">短信登录</a>
-            <a href="javascript:;" :class="{on : flag2}" @click="change2">密码登录</a>
+            <a href="javascript:;" :class="{on : flag2}" @click="change">密码登录</a>
           </div>
         </div>
         <div class="login_content">
@@ -24,7 +24,7 @@
                 >{{time > 0 ? `已发送${time}s` : "获取验证码"}}</button>
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="6" placeholder="验证码">
+                <input type="tel" maxlength="6" placeholder="验证码" v-model="code">
               </section>
               <section class="login_hint">
                 温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -34,22 +34,22 @@
             <div :class="{on : flag2}">
               <section>
                 <section class="login_message">
-                  <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
+                  <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名" v-model="name">
                 </section>
                 <section class="login_verification">
-                  <input :type="t" maxlength="8" placeholder="密码">
+                  <input :type="t" maxlength="8" placeholder="密码" v-model="psw">
                   <div class="switch_button" :class="ST" @click="handleC">
                     <div class="switch_circle" :style="`transform: translateX(${num}px);`"></div>
                     <span class="switch_text">{{msg}}</span>
                   </div>
                 </section>
                 <section class="login_message">
-                  <input type="text" maxlength="11" placeholder="验证码">
-                  <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                  <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
+                  <img ref="cap" class="get_verification" src="http://localhost:5000/captcha" alt="captcha" @click="updateCaptcha">
                 </section>
               </section>
             </div>
-            <button class="login_submit" @click.prevent="">登录</button>
+            <button class="login_submit" @click.prevent="loginIn" @keyup.enter="loginIn">登录</button>
           </form>
           <a href="javascript:;" class="about_us">关于我们</a>
         </div>
@@ -62,6 +62,8 @@
 </template>
 
 <script>
+  import {reqSendCode,reqLoginSms,reqLoginPsw} from "./../../api/index.js"
+  import {Toast,MessageBox} from "mint-ui"
     export default {
         name: "Login",
       data(){
@@ -72,8 +74,12 @@
             ST : "off",
             msg : "...",
             num : 0,
-            tele:"",
-            time:0
+            tele:"",//电话
+            time:0,
+            code :"",   //发送回来的验证码
+            psw : "", // 密码
+            name : "",  //用户名
+            captcha : ""
           }
       },
       computed:{
@@ -86,28 +92,67 @@
           this.flag = !this.flag;
           this.flag2 = !this.flag2
         },
-        change2(){
-          this.flag = !this.flag;
-          this.flag2 = !this.flag2
-        },
         handleC(){
           this.ST = (this.ST == "on" ? "off" : "on");
           this.t = (this.t == "tel" ? "password" : "tel");
           this.num = (this.num == 27 ? 0 : 27);
           this.msg = (this.msg == "abc" ? "..." : "abc");
         },
-        sendCode(){
-
-          console.log("a");
+        async sendCode(){
           this.time = 30;
-          var timer = setInterval(()=>{
+          const result = await reqSendCode(this.tele);
+          if(result.code == 0){
+            Toast("发送成功");
+            var timer = setInterval(()=>{
+              this.time--;
+              if(this.time==0) {
+                clearInterval(timer)
+              }
+            },1000)
+          }else {
+            MessageBox.alert("发送失败")
+          }
+        },
+        updateCaptcha(){
+          this.$refs.cap.src = `http://localhost:5000/captcha?time=${Date.now()}`
+        },
 
-            this.time--;
-
-            if(this.time==0) {
-              clearInterval(timer)
+        async loginIn(){
+          const {psw,name,flag,flag2,captcha,tele,code,isPhone} = this;
+          let result;
+          if(flag){
+            if(!isPhone){
+              return MessageBox.alert("手机号不合法")
+            }else if(!/^\d{6}$/.test(code)){
+              return MessageBox.alert("验证码必须为6位")
             }
-          },1000)
+            result = await reqLoginSms(tele,code);
+            if(result.code==1){
+              this.time = 0;
+            }
+          }
+
+          if(flag2){
+            if(!name){
+              return MessageBox.alert("必须输入用户名")
+            }else if(!psw){
+              return MessageBox.alert("必须输入密码")
+            }else if(captcha.length !== 4){
+              return MessageBox.alert("验证码必须4位")
+            }
+            result = await reqLoginPsw(name,psw,captcha);
+            if(result.code !== 0){
+              this.updateCaptcha();
+            }
+          }
+
+          if(result.code == 0){
+            this.$store.dispatch("saveUser",result.data);
+            this.$router.replace("/profile")
+          }else {
+            MessageBox.alert(result.msg)
+            this.updateCaptcha()
+          }
         }
       }
     }

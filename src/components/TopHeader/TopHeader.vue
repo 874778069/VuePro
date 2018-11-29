@@ -1,13 +1,13 @@
 <template>
   <header class="msite_header">
-    <span class="header_search" v-show="$route.path == '/msite'">
+    <span class="header_search" @click="$router.push('/search')" v-show="$route.path == '/msite'" >
       <i class="iconfont icon-sousuo"></i>
     </span>
     <span class="header_title">
       <span class="header_title_text ellipsis">{{title}}</span>
     </span>
     <span class="header_login" v-show="$route.path == '/msite'">
-      <span class="header_login_text" @click="$router.push('/login')">登录|注册</span>
+      <span class="header_login_text" @click="!$store.state.user._id ? $router.push('/login') : $router.push('/profile')">{{this.$store.state.user._id ? "已登录" : "登录|注册"}}</span>
     </span>
   </header>
 </template>

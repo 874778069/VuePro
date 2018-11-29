@@ -11,7 +11,7 @@
         <section class="order_no_login">
           <img src="./images/order/person.png">
           <h3>登录后查看外卖订单</h3>
-          <button @click="$router.push('/login')">立即登陆</button>
+          <button @click="!$store.state.user._id ? $router.push('/login') : $router.push('/profile')">{{this.$store.state.user._id ? "已登录" : "立即登录"}}</button>
         </section>
       </section>
     </div>

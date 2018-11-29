@@ -9,21 +9,21 @@
           </a>
         </header>
         <section class="profile-number">
-          <a href="javascript:" class="profile-link" @click="login">
+          <a href="javascript:" class="profile-link">
             <div class="profile_image">
               <i class="iconfont icon-person"></i>
             </div>
             <div class="user-info">
-              <p class="user-info-top">登录/注册</p>
-              <p>
+              <p class="user-info-top" v-if="!user.phone">{{user.name ? user.name : "登录/注册"}}</p>
+              <p v-if="!user.name">
                 <span class="user-icon">
                   <i class="iconfont icon-shouji icon-mobile"></i>
                 </span>
-                <span class="icon-mobile-number">暂无绑定手机号</span>
+                <span class="icon-mobile-number">{{user.phone ? user.phone : "暂无绑定手机号"}}</span>
               </p>
             </div>
             <span class="arrow">
-              <i class="iconfont icon-jiantou1"></i>
+              <i class="iconfont icon-jiantou1" v-show="!$store.state.user._id" @click="$router.push('/login')"></i>
             </span>
           </a>
         </section>
@@ -95,6 +95,10 @@
             </div>
           </a>
         </section>
+        <hr>
+        <section class="profile_my_order border-1px">
+          <mt-button type="danger" style="width: 100%" v-show="$store.state.user._id" @click="loginOut">退出登陆</mt-button>
+        </section>
       </section>
     </div>
   </div>
@@ -102,15 +106,24 @@
 
 <script>
   import TopHeader from "./../../components/TopHeader/TopHeader.vue"
+  import {MessageBox} from "mint-ui"
     export default {
-        name: "profile",
-      methods:{
-        login(){
-          this.$router.push("/login")
+      name: "profile",
+      computed:{
+        user(){
+          return this.$store.state.user
         }
       },
       components:{
         TopHeader
+      },
+      methods:{
+        loginOut(){
+          MessageBox.confirm("你确定退出吗").then(()=>{
+            this.$store.dispatch("reqLO");
+            this.$router.push("/login")
+          })
+        }
       }
 
     }

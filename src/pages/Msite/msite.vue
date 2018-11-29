@@ -60,7 +60,6 @@
           ShopList
         },
       mounted(){
-        this.$store.dispatch("reqAdd");
         this.$store.dispatch("reqFoodLists")
       },
       watch:{
@@ -69,7 +68,7 @@
             new Swiper(".swiper-container",{
               loop : true,
               autoplay: {
-                delay:2000,
+                delay:3000,
                 disableOnInteraction : false,
               },
               pagination:{
