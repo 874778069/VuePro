@@ -150,7 +150,7 @@
             this.$store.dispatch("saveUser",result.data);
             this.$router.replace("/profile")
           }else {
-            MessageBox.alert(result.msg)
+            MessageBox.alert(result.msg);
             this.updateCaptcha()
           }
         }

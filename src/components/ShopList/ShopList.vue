@@ -6,7 +6,7 @@
     </div>
     <div class="shop_container">
       <ul class="shop_list" v-if="arr.length>0">
-        <li class="shop_li border-1px" v-for="item in arr">
+        <li class="shop_li border-1px" v-for="item in arr" @click="$router.push('/shop')">
           <a>
             <div class="shop_left">
               <img class="shop_img" :src="`https://fuss10.elemecdn.com${item.image_path}`">
