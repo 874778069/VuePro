@@ -5,7 +5,8 @@
 import ajax from './ajax'
 
 // const BASE = 'http://localhost:5000'
-const BASE = '/api'
+const BASE = '/api';
+//const BASE = ''; //打包
 
 // [1、根据经纬度获取位置详情](#1根据经纬度获取位置详情)<br/>
 export const reqAddress = (longitude, latitude) => ajax(BASE + `/position/${latitude},${longitude}`)
