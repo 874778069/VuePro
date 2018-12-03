@@ -27,3 +27,7 @@ export const reqLoginPsw = (name,pwd,captcha) => ajax(BASE + "/login_pwd",{name,
 export const reqUser = () => ajax(BASE + "/userinfo");
 
 export const reqLoginOut = () => ajax(BASE + "/logout");
+
+export const reqInfo = () => ajax("/info");
+export const reqRatings = () => ajax("/ratings");
+export const reqGoods = () => ajax("/goods");

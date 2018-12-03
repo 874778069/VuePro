@@ -3,16 +3,18 @@
       <ShopHeader></ShopHeader>
       <div class="tab">
         <div class="tab-item">
-          <router-link to="/shop/goods">点餐</router-link>
+          <router-link to="/shop/goods" replace>点餐</router-link>
         </div>
         <div class="tab-item">
-          <router-link to="/shop/ratings">评价</router-link>
+          <router-link to="/shop/ratings" replace>评价</router-link>
         </div>
         <div class="tab-item">
           <router-link to="/shop/info">商家</router-link>
         </div>
       </div>
-      <router-view/>
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
     </div>
 </template>
 
@@ -22,6 +24,11 @@
         name: "shop",
       components:{
         ShopHeader
+      },
+      mounted(){
+          this.$store.dispatch("reqI");
+
+
       }
     }
 </script>

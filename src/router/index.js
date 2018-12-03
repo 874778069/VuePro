@@ -1,9 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import msite from "./../pages/Msite/msite.vue";
-import order from "./../pages/Order/order.vue";
-import profile from "./../pages/Profile/profile.vue";
-import search from "./../pages/Search/search.vue";
+
+
+// import msite from "./../pages/Msite/msite.vue";
+// import order from "./../pages/Order/order.vue";
+// import profile from "./../pages/Profile/profile.vue";
+// import search from "./../pages/Search/search.vue";
+const msite = ()=> import("./../pages/Msite/msite.vue");
+const order = ()=> import("./../pages/order/order.vue");
+const profile = ()=> import("./../pages/profile/profile.vue");
+const search = ()=> import("./../pages/search/search.vue");
+
+
 import login from "./../pages/Login/Login.vue"
 import shop from "./../pages/shop/shop.vue"
 import goods from "./../pages/shop/goods/goods.vue"
@@ -26,7 +34,7 @@ export default new Router({
       children : [
         {
           path : 'goods',
-          component : goods
+          component : goods,
         },
         {
           path : 'info',
